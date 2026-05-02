@@ -1,0 +1,25 @@
+body {
+  font-family: Arial;
+  padding: 20px;
+}
+
+#product-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.card {
+  width: 200px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.card img {
+  width: 100%;
+}
+
+.highlight {
+  border: 2px solid red;
+}
