@@ -1,10 +1,7 @@
 # Bernardo Soares de Sousa Cozer
 
-## Cards Renderizados
+## Home Page
 ![Cards](img/Cards.png)
 
-## Detalhes Carregados
+## Página de Detalhes
 ![Detalhes](img/Detalhes.png)
-
-## Saída Do Console
-![Console](img/Console.png)

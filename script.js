@@ -1,4 +1,3 @@
-
 const data = {
   produtos: [
     { id: 1, nome: "iPhone 14", preco: 6000, categoria: "Celulares", imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSoKtFZMz9ecfWPCMtqmq8dIpM2olviEBokA&s", descricao: "Apple top", emEstoque: true },
@@ -12,7 +11,9 @@ const data = {
   ]
 };
 
-
+// ==========================
+// Seletores
+// ==========================
 const productList = document.getElementById("product-list");
 const productDetails = document.getElementById("product-details");
 
@@ -20,12 +21,12 @@ const searchInput = document.querySelector("#search");
 const categorySelect = document.querySelector("#category");
 const btnRender = document.querySelector("#btnRender");
 
-
-
+// ==========================
+// Funções
+// ==========================
 function formatPrice(preco) {
   return "R$ " + preco.toFixed(2);
 }
-
 
 function createProductCard(produto) {
   const card = document.createElement("div");
@@ -33,25 +34,23 @@ function createProductCard(produto) {
   card.setAttribute("data-id", produto.id);
   card.classList.add("card");
 
- 
   card.style.backgroundColor = "#f9f9f9";
   card.style.padding = "10px";
 
   card.innerHTML = `
-    <h3>${produto.nome}</h3> 
-    <img src="${produto.imagem}">
+    <h3>${produto.nome}</h3>
+    <img src="${produto.imagem}" style="cursor:pointer">
     <p>${formatPrice(produto.preco)}</p>
     <p>${produto.categoria}</p>
     <button class="btn-details">Ver detalhes</button>
     <button class="btn-highlight">Destacar</button>
   `;
 
-  
   const btnDetails = card.querySelector(".btn-details");
   const btnHighlight = card.querySelector(".btn-highlight");
 
   btnDetails.addEventListener("click", () => {
-    showProductDetails(produto);
+    window.location.href = `detalhes.html?id=${produto.id}`;
   });
 
   btnHighlight.addEventListener("click", () => {
@@ -61,8 +60,9 @@ function createProductCard(produto) {
   return card;
 }
 
-
 function renderProducts(produtos) {
+  if (!productList) return;
+
   productList.innerHTML = "";
 
   produtos.forEach(produto => {
@@ -70,15 +70,15 @@ function renderProducts(produtos) {
     productList.appendChild(card);
   });
 
-
   const cards = document.querySelectorAll(".card");
   cards.forEach(card => {
     console.log("Card ID:", card.getAttribute("data-id"));
   });
 }
 
-
 function renderCategories() {
+  if (!categorySelect) return;
+
   const categorias = [...new Set(data.produtos.map(p => p.categoria))];
 
   categorySelect.innerHTML = '<option value="Todas">Todas</option>';
@@ -91,19 +91,9 @@ function renderCategories() {
   });
 }
 
-
-function showProductDetails(produto) {
-  productDetails.innerHTML = `
-    <h2>${produto.nome}</h2>
-    <p><strong>Preço:</strong> ${formatPrice(produto.preco)}</p>
-    <p><strong>Categoria:</strong> ${produto.categoria}</p>
-    <p><strong>Estoque:</strong> ${produto.emEstoque ? "Disponível" : "Indisponível"}</p>
-    <p>${produto.descricao}</p>
-  `;
-}
-
-
 function filterProducts() {
+  if (!searchInput || !categorySelect) return data.produtos;
+
   const texto = searchInput.value.toLowerCase();
   const categoria = categorySelect.value;
 
@@ -115,19 +105,61 @@ function filterProducts() {
   });
 }
 
+// ==========================
+// DETALHES
+// ==========================
+function getProductIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return Number(params.get("id"));
+}
 
-searchInput.addEventListener("input", () => {
-  renderProducts(filterProducts());
-});
+function renderDetailsPage() {
+  if (!productDetails) return;
 
-categorySelect.addEventListener("change", () => {
-  renderProducts(filterProducts());
-});
+  const id = getProductIdFromURL();
+  const produto = data.produtos.find(p => p.id === id);
 
-btnRender.addEventListener("click", () => {
-  renderProducts(filterProducts());
-});
+  if (!produto) return;
 
+  productDetails.innerHTML = `
+    <h2>${produto.nome}</h2>
+    <img src="${produto.imagem}" style="max-width:300px">
+    <p><strong>Preço:</strong> ${formatPrice(produto.preco)}</p>
+    <p><strong>Categoria:</strong> ${produto.categoria}</p>
+    <p><strong>Estoque:</strong> ${produto.emEstoque ? "Disponível" : "Indisponível"}</p>
+    <p>${produto.descricao}</p>
+  `;
+}
 
-renderCategories();
-renderProducts(data.produtos);
+// ==========================
+// Eventos (somente index)
+// ==========================
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    renderProducts(filterProducts());
+  });
+}
+
+if (categorySelect) {
+  categorySelect.addEventListener("change", () => {
+    renderProducts(filterProducts());
+  });
+}
+
+if (btnRender) {
+  btnRender.addEventListener("click", () => {
+    renderProducts(filterProducts());
+  });
+}
+
+// ==========================
+// Inicialização
+// ==========================
+if (productList) {
+  renderCategories();
+  renderProducts(data.produtos);
+}
+
+if (productDetails) {
+  renderDetailsPage();
+}
